@@ -1,0 +1,42 @@
+{
+  "name": "ghlemebedtools",
+  "version": "1.0.0",
+  "description": "Tools for working with GHL embedded surveys, forms, etc.",
+  "homepage": "https://levelupghl.com",
+  "author": "joe@levelupghl.com",
+  "license": "none",
+  "type": "module",
+  "keywords": [
+    "gohighlevel",
+    "ghl",
+    "embed",
+    "forms",
+    "surveys"
+  ],
+  "scripts": {
+    "clean": "del-cli dist/version dist/js .dev",
+    "changelog": "auto-changelog -p -t src/snippets/changelog.hbs --commit-limit false --hide-empty-releases --hide-credit",
+    "deploy": "git push && git push --tags",
+    "postdeploy": "node purgeCache.js",
+    "predev": "del-cli .dev",
+    "dev": "rollup --config rollup.config.dev.js --watch --environment OPENPAGE:true",
+    "prebuild": "npm run clean && npm run update:versions",
+    "build": "npm run build:js",
+    "build:js": "rollup -c",
+    "update:versions": "node updateVersions.js",
+    "version": "npm run build && npm run changelog && git add -A CHANGELOG.md dist version src/snippets/banner.css"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-replace": "^5.0.5",
+    "auto-changelog": "^2.4.0",
+    "chalk": "^5.3.0",
+    "del-cli": "^5.1.0",
+    "glob": "^10.3.10",
+    "rollup": "^4.12.0",
+    "rollup-plugin-esbuild": "^6.1.1",
+    "rollup-plugin-serve": "^1.1.1",
+    "typescript": "^5.3.3"
+  }
+}
