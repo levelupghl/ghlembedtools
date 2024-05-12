@@ -2,7 +2,17 @@
 file.
 
 ####
-1.0.1
+[v1.0.2](https://github.com/leveluptools/ghlembedtools/compare/v1.0.1...v1.0.2)
+
+-
+Update banner.css
+[`2397593`](https://github.com/leveluptools/ghlembedtools/commit/2397593ea30f2ffd13a1f7687cef49d6a00b0678)
+
+####
+v1.0.1
+
+>
+12 May 2024
 
 -
 Init with build framework
