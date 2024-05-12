@@ -4,6 +4,12 @@
 
 GHL embed tools
 
+# TODO
+
+- [ ] Finish support for queueing sendQueryParams
+- [ ] Add documentation showing how to add this script to a page and send custom params
+
+
 # Development & Deployment
 
 ```bash

@@ -7,9 +7,11 @@ import { testLocalStorage } from "./lib/supports"
 
 const DEBUG = true
 const iframeSelector = "iframe:not([data-embed-tools-init])"
-const ghlIframes: Array<IFrame> = []
+const iframesList: Array<IFrame> = []
 const search_cache = window.location.search
 const SUPPORTS_LOCALSTORAGE = testLocalStorage()
+// GHL iframe urls to match; see form_embed line 838
+const GHL_EMBED_SRCS = ["/form", "/survey", "/booking", "/group"]
 
 const embedTools = {
   debug: DEBUG,
@@ -38,11 +40,11 @@ interface IFrame extends HTMLIFrameElement {
 function sendQueryParams(params: any, iframe: IFrame | null = null) {
   if (iframe) {
     postQueryParams(iframe, params)
-    return
+  } else {
+    iframesList.forEach((iframe) => {
+      postQueryParams(iframe, params)
+    })
   }
-  ghlIframes.forEach((iframe) => {
-    postQueryParams(iframe, params)
-  })
 }
 
 function postQueryParams(iframe: IFrame, params: any) {
@@ -77,18 +79,6 @@ function getCachedSession(locationId: string | undefined) {
   }
 }
 
-function filterGHLIframes(iframe: IFrame): boolean {
-  if (iframe.dataset.embedToolsInit) {
-    console.log("iframe already init:", iframe)
-    return false
-  }
-  // TODO: finish this function
-  // Some WP plugins like lazysizes removes iframe.src until the iframe is visible.
-  // Since GHL's form_embed.js only filters on src, we need support both src and dataset.src.
-  const src = iframe.src || iframe.dataset.src
-  return true
-}
-
 function getIframeByEventSource(
   source: MessageEventSource | null
 ): IFrame | void {
@@ -101,39 +91,48 @@ function getIframeByEventSource(
   }
 }
 
+// Listen for fetch-query-params messages
+function processIframeMessage(evt: MessageEvent) {
+  if (embedTools.debug) {
+    console.log("[EMBEDTOOLS] received message:", evt, evt.data)
+  }
+  const data = evt.data
+  if (typeof data === "object" && data[0] === "fetch-query-params") {
+    debugger
+    const iframe = getIframeByEventSource(evt.source)
+    if (iframe) {
+      // Cache location ID on the iframe; needed for later postMessage
+      iframe.dataset.embedToolsLocationId = data[2]
+    }
+    // Use the current location.search or default to cache if the search params happened to have been removed from url
+    const search =
+      window.location.search.length > 1 ? window.location.search : search_cache
+    const params = getQueryParams(search)
+    sendQueryParams(params, iframe || null)
+  }
+}
+
 function setupIframesAndObserve(document: Document): void {
+  const filterIframes = (iframe: IFrame): boolean => {
+    if (iframe.dataset.embedToolsInit) {
+      return false
+    }
+    // Some WP plugins like lazysizes removes iframe.src until the iframe is visible.
+    // Since GHL's form_embed.js only filters on src, we need support both src and dataset.src.
+    const src = iframe.src || iframe.dataset.src || ""
+    return GHL_EMBED_SRCS.some((r) => src.includes(r))
+  }
+
   const initIframes = (): void => {
     Array.from(document.querySelectorAll<IFrame>(iframeSelector))
-      .filter(filterGHLIframes)
+      .filter(filterIframes)
       .forEach((iframe) => {
         iframe.dataset.embedToolsInit = "true"
-        // Use the current location.search or default to cache if the search params happened to have been removed from url
-        const search =
-          window.location.search.length > 1
-            ? window.location.search
-            : search_cache
-        const params = getQueryParams(search)
-        // debugger
-        console.log("params:", params)
-        // TODO: send query params on init? or wait for fetch-query-params?
+        iframesList.push(iframe)
       })
   }
 
-  // TODO: setup listener for fetch-query-params message from iframes
-  // see form_embed.js
-  window.addEventListener("message", (evt) => {
-    if (embedTools.debug) {
-      console.log("[EMBEDTOOLS] received message:", evt, evt.data)
-    }
-    const data = evt.data
-    if (typeof data === "object" && data[0] === "fetch-query-params") {
-      debugger
-      const iframe = getIframeByEventSource(evt.source)
-      if (iframe) {
-        iframe.dataset.embedToolsLocationId = data[2]
-      }
-    }
-  })
+  window.addEventListener("message", processIframeMessage)
 
   // Start by initializing any iframes already present
   initIframes()
