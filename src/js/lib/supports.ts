@@ -1,4 +1,4 @@
-export function testLocalStorage() {
+export function hasLocalStorage() {
   try {
     const t = "__storage_test__"
     const store = window.localStorage

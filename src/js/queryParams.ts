@@ -3,13 +3,13 @@
 
 import { debounce } from "./lib/debounce"
 import { getQueryParams, mergeObjects } from "./lib/utils"
-import { testLocalStorage } from "./lib/supports"
+import { hasLocalStorage } from "./lib/supports"
 
 const DEBUG = true
 const iframeSelector = "iframe:not([data-embed-tools-init])"
 const iframesList: Array<IFrame> = []
 const search_cache = window.location.search
-const SUPPORTS_LOCALSTORAGE = testLocalStorage()
+const SUPPORTS_LOCALSTORAGE = hasLocalStorage()
 // GHL iframe urls to match; see form_embed line 838
 const GHL_EMBED_SRCS = ["/form", "/survey", "/booking", "/group"]
 let send_queue: Array<object> = []
