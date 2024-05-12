@@ -19,3 +19,18 @@ export function addQueryParam(
     return url
   }
 }
+
+export function getQueryParams(url_or_search: string | null = null): Record<string, string> {
+  let search: string
+  if (url_or_search) {
+    search = url_or_search.startsWith("?") ? url_or_search : new URL(url_or_search).search
+  } else {
+    search = window.location.search || new URL(window.location.href).search
+  }
+  const params = new URLSearchParams(search)
+  const queryParams: Record<string, string> = {}
+  params.forEach((value, key) => {
+    queryParams[key] = value
+  })
+  return queryParams
+}

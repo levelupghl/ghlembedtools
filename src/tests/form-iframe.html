@@ -1,0 +1,20 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2.0.6/css/pico.min.css" />
+    <script>
+      window.addEventListener("message", (evt) => {
+        console.log("IFRAME received message:", evt, evt.data)
+        // debugger
+      })
+      // Request query params from host window
+      // Wait a couple seconds for form_embed.js to load in the parent frame
+      // setTimeout(() => {
+      //   window.parent.postMessage(["fetch-query-params"], "*")
+      // }, 2000)
+    </script>
+  </head>
+  <body style="padding: 10px">
+    <h1>Iframe Test to Fetch Query Params</h1>
+    <p>This tests to see if GHL form_embed.js code checks origin or limits iframe access.</p>
+  </body>
+</html>
