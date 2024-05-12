@@ -2,7 +2,7 @@ import { debounce } from "./lib/debounce"
 import { getQueryParams, mergeObjects } from "./lib/utils"
 import { hasLocalStorage } from "./lib/supports"
 
-const DEBUG = true
+const DEBUG = false
 const iframeSelector = "iframe:not([data-embed-tools-init])"
 const iframesList: Array<IFrame> = []
 const search_cache = window.location.search
@@ -171,3 +171,5 @@ if (!window.levelup) {
   window.levelup.debug ??= embedTools.debug
   window.levelup.sendQueryParams ??= embedTools.sendQueryParams
 }
+
+console.log(`Powered by __theme_name__ __theme_version__:`, "__theme_website__")
