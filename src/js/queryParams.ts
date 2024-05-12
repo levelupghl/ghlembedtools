@@ -2,7 +2,7 @@
 //
 
 import { debounce } from "./lib/debounce"
-import { getQueryParams } from "./lib/urlUtils"
+import { getQueryParams, mergeObjects } from "./lib/utils"
 import { testLocalStorage } from "./lib/supports"
 
 const DEBUG = true
@@ -12,6 +12,7 @@ const search_cache = window.location.search
 const SUPPORTS_LOCALSTORAGE = testLocalStorage()
 // GHL iframe urls to match; see form_embed line 838
 const GHL_EMBED_SRCS = ["/form", "/survey", "/booking", "/group"]
+let send_queue: Array<object> = []
 
 const embedTools = {
   debug: DEBUG,
@@ -20,10 +21,8 @@ const embedTools = {
 
 export interface CustomWindow extends Window {
   levelup: {
-    embedTools: {
-      debug: boolean
-      sendQueryParams: any
-    }
+    debug: boolean
+    sendQueryParams: any
   }
 }
 declare let window: CustomWindow
@@ -37,7 +36,12 @@ interface IFrame extends HTMLIFrameElement {
   }
 }
 
-function sendQueryParams(params: any, iframe: IFrame | null = null) {
+export function sendQueryParams(params: object, iframe: IFrame | null = null) {
+  _sendQueryParams(params, iframe)
+  send_queue.push(params)
+}
+
+function _sendQueryParams(params: object, iframe: IFrame | null = null) {
   if (iframe) {
     postQueryParams(iframe, params)
   } else {
@@ -47,7 +51,8 @@ function sendQueryParams(params: any, iframe: IFrame | null = null) {
   }
 }
 
-function postQueryParams(iframe: IFrame, params: any) {
+
+function postQueryParams(iframe: IFrame, params: object) {
   const url = new URL(document.location.href)
   const locationId = iframe.dataset.embedToolsLocationId
   const cached_session = getCachedSession(locationId)
@@ -98,7 +103,6 @@ function processIframeMessage(evt: MessageEvent) {
   }
   const data = evt.data
   if (typeof data === "object" && data[0] === "fetch-query-params") {
-    debugger
     const iframe = getIframeByEventSource(evt.source)
     if (iframe) {
       // Cache location ID on the iframe; needed for later postMessage
@@ -107,8 +111,18 @@ function processIframeMessage(evt: MessageEvent) {
     // Use the current location.search or default to cache if the search params happened to have been removed from url
     const search =
       window.location.search.length > 1 ? window.location.search : search_cache
-    const params = getQueryParams(search)
-    sendQueryParams(params, iframe || null)
+    let params = getQueryParams(search)
+
+    // Add any params that were previously queued up
+    if (send_queue && send_queue.length) {
+      params = mergeObjects([params, ...send_queue])
+    }
+
+    // Set a timeout to allow time for form_embed.js to send query params, then
+    // send our params that may contain custom params from window.levelup.sendQueryParams
+    setTimeout(() => {
+      _sendQueryParams(params, iframe || null)
+    }, 10)
   }
 }
 
@@ -137,6 +151,11 @@ function setupIframesAndObserve(document: Document): void {
   // Start by initializing any iframes already present
   initIframes()
 
+  // Save any queued sendQueryParams
+  if (window.levelup?.sendQueryParams?.queue?.length) {
+    send_queue = window.levelup?.sendQueryParams?.queue
+  }
+
   // Rerun initFrames anytime the DOM changes, but debounced every 50ms
   const observer = new MutationObserver(debounce(initIframes, 50))
   observer.observe(document.body, {
@@ -148,13 +167,10 @@ function setupIframesAndObserve(document: Document): void {
 
 setupIframesAndObserve(window.document)
 
-// Export embedTools
-export default sendQueryParams
+// Export sendQueryParams to window.levelup.sendQueryParams
 if (!window.levelup) {
-  window.levelup = { embedTools }
-} else if (!window.levelup.embedTools) {
-  window.levelup.embedTools = embedTools
+  window.levelup = embedTools
 } else {
-  // TODO: check if sendQueryParams is an array queue that needs processing
-  window.levelup.embedTools.sendQueryParams = sendQueryParams
+  window.levelup.debug ??= embedTools.debug
+  window.levelup.sendQueryParams ??= embedTools.sendQueryParams
 }
