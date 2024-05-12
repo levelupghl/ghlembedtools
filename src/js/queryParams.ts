@@ -1,6 +1,3 @@
-// Test: https://app.muxxi.com/v2/preview/CyEXd8u9Eg99MOaO3iPq?notrack=true&email=test@example.com
-//
-
 import { debounce } from "./lib/debounce"
 import { getQueryParams, mergeObjects } from "./lib/utils"
 import { hasLocalStorage } from "./lib/supports"

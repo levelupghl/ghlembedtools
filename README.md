@@ -4,12 +4,6 @@
 
 GHL embed tools
 
-# TODO
-
-- [ ] Finish support for queueing sendQueryParams
-- [ ] Add documentation showing how to add this script to a page and send custom params
-
-
 # Usage
 
 ```html
@@ -31,3 +25,5 @@ npm version patch
 # Rebuild and deploy
 npm run deploy
 ```
+
+[Test page](https://app.muxxi.com/v2/preview/CyEXd8u9Eg99MOaO3iPq?email=test@example.com&gclid=test123)
