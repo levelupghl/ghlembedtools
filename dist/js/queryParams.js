@@ -1,7 +1,7 @@
 /*!***************************************
  * Level Up GHL Embed Tools
  * https//levelupghl.com
- * Version: v1.0.2
+ * Version: v1.0.3
  ****************************************/
 
 (function (exports) {
@@ -59,7 +59,7 @@
   }
 
   var _a, _b, _c, _d;
-  const DEBUG = true;
+  const DEBUG = false;
   const iframeSelector = "iframe:not([data-embed-tools-init])";
   const iframesList = [];
   const search_cache = window.location.search;
@@ -174,6 +174,7 @@
     (_b = (_a = window.levelup).debug) != null ? _b : _a.debug = embedTools.debug;
     (_d = (_c = window.levelup).sendQueryParams) != null ? _d : _c.sendQueryParams = embedTools.sendQueryParams;
   }
+  console.log(`Powered by Level Up Embed Tools v1.0.3:`, "https://levelupghl.com");
 
   exports.sendQueryParams = sendQueryParams;
 

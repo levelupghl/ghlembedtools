@@ -2,7 +2,17 @@
 file.
 
 ####
+[v1.0.3](https://github.com/leveluptools/ghlembedtools/compare/v1.0.2...v1.0.3)
+
+-
+Add attribution logging and turn off debugging
+[`cd2f5ac`](https://github.com/leveluptools/ghlembedtools/commit/cd2f5aca1b91f1a870152dd3d14b600846c34bda)
+
+####
 [v1.0.2](https://github.com/leveluptools/ghlembedtools/compare/v1.0.1...v1.0.2)
+
+>
+12 May 2024
 
 -
 Update banner.css
