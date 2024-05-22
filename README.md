@@ -9,7 +9,7 @@ GHL embed tools
 Add the queryParams.js script to any page that has a GHL widget embedded.
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/leveluptools/ghlembedtools@v1/dist/js/queryParams.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/levelupghl/ghlembedtools@v1/dist/js/queryParams.min.js"></script>
 ```
 
 Optionally send custom data to embedded widgets. Set data not available in the URL query params

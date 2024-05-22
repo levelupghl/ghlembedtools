@@ -25,10 +25,10 @@ async function showPurgeMessage() {
   )
   // TODO: create the urls from rollup.config.js FILES_LIST
   log(
-    `https://cdn.jsdelivr.net/gh/leveluptools/ghlembedtools@${version}/dist/js/queryParams.js`
+    `https://cdn.jsdelivr.net/gh/levelupghl/ghlembedtools@${version}/dist/js/queryParams.js`
   )
   log(
-    `https://cdn.jsdelivr.net/gh/leveluptools/ghlembedtools@${version}/dist/js/queryParams.min.js`
+    `https://cdn.jsdelivr.net/gh/levelupghl/ghlembedtools@${version}/dist/js/queryParams.min.js`
   )
 }
 
